@@ -1,76 +1,13 @@
-# // module.exports = app => {
-# //   const router = require("express").Router();
-# //   const memberController = require("../controllers/member.controller");
-# //   /**
-# //      * @swagger
-# //      * tags:
-# //      * - name: api
-# //      *   description: member api management
-# //      */
-# //   app.use("/api", router);
-
-# //   /**
-# //    * @swagger
-# //    * paths:
-# //    *  /member:
-# //    *    get:
-# //    *      summary: get all member data
-# //    *      tags: [member]
-# //    *      responses:
-# //    *        "200":
-# //    *          description: response all member data
-# //    *          content:
-# //    *            application/json:
-# //    *              schema:
-# //    *                properties:
-# //    *                  message:
-# //    *                    type: string
-# //    *                example:
-# //    *                  message: '驗證碼發送成功!'
-# //    *        "400":
-# //    *          description: 回應 發送失敗訊息 (ex:驗證碼發送失敗!間隔時間太短!)
-# //    *          content:
-# //    *            application/json:
-# //    *              schema:
-# //    *                $ref: '#/components/responses/Error400BadRequest'
-# //    */
-# //   router.get("/members", memberController.queryMembers);
-
-
-# //   /**
-# //    * @swagger
-# //    * components:
-# //    *   schemas:
-# //    *     Member:
-# //    *       type: object
-# //    *       required:
-# //    *         - name
-# //    *       properties:
-# //    *       
-# //    */
-# // }
-
-
 openapi: 3.0.0
 info:
   title: Member API
   version: 1.0.0
   description: API for managing member
 paths:
-  /:
-    get:
-      description: "This endpoint returns all todos available in the database"
-      operationId: "GetAllTodos"
-      parameters: []
-      responses:
-        200:
-          description: "An array of todos"
-          schema:
-            type: "array"
-            items:
   /members:
     get:
       summary: Returns a list of all members
+      description: Use this api to get all members.
       tags:
         - members
       responses:
@@ -81,20 +18,89 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Member'
+                  $ref: '#/components/schemas/Members'
+  /signup:
+    post:
+      summary: Member sign up
+      description: Use this api to sign up.
+      tags:
+        - members
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Member'
+      responses:
+        '201':
+          description: Member created successfully
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/MemberResponse'
+
 components:
   schemas:
     Member:
       type: object
       required:
-        - name
+        - userName
+        - password
+        - email
+        - firstName
+        - lastName
+      properties:
+        userName:
+          type: string
+          example: 'username'
+        password:
+          type: string
+          example: '12kjldkfj;adf'
+        email:
+          type: string
+          example: 'ec1348@gmail.com'
+        firstName:
+          type: string
+          example: 'eric'
+        lastName:
+          type: string
+          example: 'chen'
+    Members:
+      type: object
+      required:
+        - userName
+        - password
+        - email
+        - firstName
+        - lastName
       properties:
         id:
           type: integer
+        userName:
+          type: string
+          example: 'username'
+        password:
+          type: string
+          example: '12kjldkfj;adf'
+        email:
+          type: string
+          example: 'ec1348@gmail.com'
+        firstName:
+          type: string
+          example: 'eric'
+        lastName:
+          type: string
+          example: 'chen'
+    MemberResponse:
+      type: object
+      required:
+        - userName
+      properties:
+        userName:
+          type: string
+        email:
+          type: string
         firstName:
           type: string
         lastName:
           type: string
-        age:
-          type: integer
-          format: int32
