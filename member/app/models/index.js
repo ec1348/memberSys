@@ -1,6 +1,6 @@
 const dbConfig = require('../config/db.config')
 const fs = require('fs')
-console.log('global env => ' + global.env)
+console.log('process.env.NODE_ENV => ' + process.env.NODE_ENV)
 const Sequelize = require('sequelize')
 const sequelize = new Sequelize(
   dbConfig.DB, 
@@ -19,7 +19,7 @@ const sequelize = new Sequelize(
 const db = {}
 db.Member = require('./member.model')(sequelize)
 
-if(global.env === 'dev'){
+if(process.env.NODE_ENV === 'dev'){
   ( async () => {
     //資料庫結構與ORM模型同步
     await sequelize.sync({force: false})
@@ -56,5 +56,8 @@ if(global.env === 'dev'){
         console.log('Unable to check for exists members: ', err)
       })
   })()
+}
+if(process.env.NODE_ENV === 'test'){
+  sequelize.sync({ force: true });
 }
 module.exports = db

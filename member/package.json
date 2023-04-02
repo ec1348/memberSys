@@ -4,8 +4,8 @@
   "description": "member 功能",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon",
-    "test": "mocha ./app/**/*test.js"
+    "dev": "NODE_ENV=dev nodemon",
+    "test": "NODE_ENV=test mocha ./app/**/*test.js"
   },
   "author": "Eric Chen aka CMJ",
   "license": "ISC",
