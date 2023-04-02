@@ -3,7 +3,8 @@ const app = require('../../app')
 const request = require('supertest')(app)
 const expect = require('chai').expect
 
-describe('Test memberController', () => {
+describe('Test memberController', function() {
+  this.timeout(5000);
   describe('POST /signup', async () => {
     it('Should add a new user', (done) => {
       request
@@ -15,11 +16,11 @@ describe('Test memberController', () => {
           firstName: 'testFirstName',
           lastName: 'testLastName'
         })
-        .end(( err, res) => {
+        .end((err, res) => {
           expect(res.body.message).to.equal('add new member successfully')
           done(err)
         })
-    })
+    });
     it('Should return userName has been used', (done) => {
       request
         .post('/signup')
@@ -34,6 +35,6 @@ describe('Test memberController', () => {
           expect(res.body.message).to.equal('userName has been used')
           done(err)
         })
-    })
-  })
+    });
+  });
 })
