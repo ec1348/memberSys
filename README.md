@@ -21,6 +21,7 @@ Each function in Tools' project provides the following features and functionalit
 - Restful api management (Swagger)
 - Database (Mysql) 
 - Business logic.
+- Unit Test (Mocha, Chai, Supertest)
 
 ## Contributors and License ##
 This project is created and maintained by Eric Chen (陳銘章) and released under the MIT License. If you would like to contribute to this project, please refer to the guidelines in the CONTRIBUTING.md file.
