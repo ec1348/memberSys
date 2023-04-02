@@ -1,4 +1,5 @@
 const dbConfig = require('../config/db.config')
+const fs = require('fs')
 console.log('global env => ' + global.env)
 const Sequelize = require('sequelize')
 const sequelize = new Sequelize(
@@ -9,7 +10,10 @@ const sequelize = new Sequelize(
       host: dbConfig.HOST,
       dialect: dbConfig.dialect,
       pool: dbConfig.pool,
-      timezone: '+08:00'
+      timezone: '+08:00',
+      logging: (query) => {
+        fs.appendFileSync('queries.log', query + '\n')
+      }
   },
   )
 const db = {}
