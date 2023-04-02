@@ -2,7 +2,7 @@
   "name": "member",
   "version": "1.0.0",
   "description": "member 功能",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon",
     "test": "mocha ./app/**/*test.js"
@@ -21,6 +21,7 @@
   "devDependencies": {
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3"
   }
 }
