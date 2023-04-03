@@ -17,47 +17,34 @@ const sequelize = new Sequelize(
   },
   )
 const db = {}
-db.Member = require('./member.model')(sequelize)
+db.Member = require('./member.model')(sequelize);
 
-if(process.env.NODE_ENV === 'dev'){
-  ( async () => {
+(async () => {
+  try{
     //資料庫結構與ORM模型同步
-    await sequelize.sync({force: false})
-    .then(() => {
+    await sequelize.sync({ force: process.env.NODE_ENV === 'test'})
+    // 判斷資料表有無資料，無則新增
+    if(process.env.NODE_ENV === 'dev'){
+      await sequelize.sync({force: false})
       console.log('Table created')
-    })
-    .catch((err) => {
-      console.error('Unable to create table', err)
-    })
-    //判斷資料表有無資料 無則新增
-    //User table
-    db.Member.findOne({where: {firstName: 'testFirstName: Eric'}})
-      .then(member => {
-        if(!member){
-          db.Member.create({
-            userName: 'testUserName: userName',
-            password: '$2b$12$ziu2WZT.7ZuasduiBv7zT.jwFpV6AnLbH9AXv6Ug37WcZlz21Tyje',
-            email: 'ec1348@gmail.com',
-            firstName: 'testFirstName: Eric',
-            lastName: 'testLastName: Chen',
-            DOB: '1996-06-11 00:00:00'
-          })
-            .then( member => {
-              console.log('First member created')
-            })
-            .catch( err => {
-              console.log('Unable to create first member', err)
-            })
-        }else {
-          console.log('First member already exists: ')
-        }
-      })
-      .catch((err) => {
-        console.log('Unable to check for exists members: ', err)
-      })
-  })()
-}
-if(process.env.NODE_ENV === 'test'){
-  sequelize.sync({ force: true });
-}
+      const member = await db.Member.findOne({where: {firstName: 'testFirstName: Eric'}})
+      if(!member) {
+        await db.Member.create({
+          userName: 'testUserName: userName',
+          password: '$2b$12$ziu2WZT.7ZuasduiBv7zT.jwFpV6AnLbH9AXv6Ug37WcZlz21Tyje',
+          email: 'ec1348@gmail.com',
+          firstName: 'testFirstName: Eric',
+          lastName: 'testLastName: Chen',
+          DOB: '1996-06-11 00:00:00'
+        })
+        console.log('First member created')
+      } else {
+        console.log('First member already exists')
+      }
+    }
+  } catch(err){
+    console.error('Unable to create table or check for existing members:', err);
+  }
+})()
+
 module.exports = db
