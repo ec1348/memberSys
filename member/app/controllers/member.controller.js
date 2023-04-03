@@ -16,32 +16,28 @@ exports.memberSignUp = async (req, res) => {
     lastName
   } = req.body
   let hashedPassword = await hashPassword(password)
-
-  // check userName
-  await db.Member.findOne({where: {userName: userName}})
-    .then(member => {
-      if(member){
-        res.send({
-          message: 'userName has been used'
-        })
-      }
+  
+  let [memberWithUserName, memberWithEmail] = await Promise.all([
+    db.Member.findOne({where: {userName: userName}}),
+    db.Member.findOne({where: {email: email}})
+  ]);
+  
+  if (memberWithUserName) {
+    res.send({
+      message: 'userName has been used'
     })
-    .catch(err => {
-      console.log('err')
+    return;
+  }
+  
+  if (memberWithEmail) {
+    res.send({
+      message: 'email has been used'
     })
-
-  // check email
-  await db.Member.findOne({where: {email: email}})
-    .then(member => {
-      if(member){
-        res.send({
-          message: 'email has been used'
-        })
-      }
-    })
+    return;
+  }
   
   
-  db.Member.create({
+  await db.Member.create({
     userName: userName,
     password: hashedPassword,
     email: email,
@@ -55,6 +51,7 @@ exports.memberSignUp = async (req, res) => {
       })
   })
     .catch(err => {
-      res.err(err)
+      console.log(err)
+      res.status(400).json({message: 'Error creating user'})
   })
 };
