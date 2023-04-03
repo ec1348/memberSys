@@ -36,5 +36,20 @@ describe('Test memberController', function() {
           done(err)
         })
     });
+    it('Should return email has been used', (done) => {
+      request
+        .post('/signup')
+        .send({
+          userName: 'testUserName2',
+          password: '6666',
+          email: 'test@gmail.com',
+          firstName: 'testFirstName',
+          lastName: 'testLastName'
+        })
+        .end(( err, res) => {
+          expect(res.body.message).to.equal('email has been used')
+          done(err)
+        })
+    });
   });
 })
