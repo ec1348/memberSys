@@ -18,6 +18,11 @@ const sequelize = new Sequelize(
   )
 const db = {}
 db.Member = require('./member.model')(sequelize);
+db.LoginHistory = require('./login-history.model')(sequelize)
+
+// set foreignKey
+db.Member.hasMany(db.LoginHistory, { foreignKey: 'member_id' });
+db.LoginHistory.belongsTo(db.Member, { foreignKey: 'member_id' });
 
 (async () => {
   try{
