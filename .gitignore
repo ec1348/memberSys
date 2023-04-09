@@ -1,4 +1,15 @@
+# modules
 */node_modules
+
+# DB data
 mysql_member_data
+mysql_memberDev_data
+mysql_memberTest_data
+
+# query log
 */queries.log
+*/queries_dev.log
+*/queries_test.log
+
+# Environment
 */.env
