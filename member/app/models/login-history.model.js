@@ -27,10 +27,7 @@ module.exports = (sequelize) => {
       sequelize, 
       modelName: 'LoginHistory',
       tableName: 'login-history',
-      timestamps: true,
-      createdAt: 'createdAt',
-      updatedAt: 'updatedAt',
-      
+      timestamps: false,
     }
   )
   return LoginHistory
