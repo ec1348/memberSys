@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+require('dotenv').config();
 
 app.use(bodyParser.json())
 // 設定swagger
