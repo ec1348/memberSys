@@ -30,7 +30,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Member'
+              $ref: '#/components/schemas/MemberSingUp'
       responses:
         '201':
           description: Member created successfully
@@ -38,10 +38,41 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/MemberResponse'
+  /signin:
+    post:
+      summary: Member sign in
+      description: Use this api to sign in.
+      tags:
+        - members
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberSingIn'
+      responses:
+        '201':
+          description: Member Signed in successfully
+          content:
+            application/json: 
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+                    
 
 components:
   schemas:
-    Member:
+    MemberSingUp:
       type: object
       required:
         - userName
@@ -52,10 +83,10 @@ components:
       properties:
         userName:
           type: string
-          example: 'username'
+          example: 'testUserName'
         password:
           type: string
-          example: '12kjldkfj;adf'
+          example: '123456'
         email:
           type: string
           example: 'ec1348@gmail.com'
@@ -65,11 +96,22 @@ components:
         lastName:
           type: string
           example: 'chen'
-    Members:
+    MemberSingIn:
       type: object
       required:
         - userName
         - password
+      properties:
+        userName:
+          type: string
+          example: 'testUserName'
+        password:
+          type: string
+          example: '123456'
+    Members:
+      type: object
+      required:
+        - userName
         - email
         - firstName
         - lastName
@@ -79,9 +121,6 @@ components:
         userName:
           type: string
           example: 'username'
-        password:
-          type: string
-          example: '12kjldkfj;adf'
         email:
           type: string
           example: 'ec1348@gmail.com'
