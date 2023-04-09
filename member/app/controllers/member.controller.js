@@ -1,5 +1,6 @@
 const db = require('../models')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken');
 
 let hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10)
@@ -55,3 +56,46 @@ exports.memberSignUp = async (req, res) => {
       res.status(400).json({message: 'Error creating user'})
   })
 };
+
+exports.memberSignIn = async (req, res) => {
+  try{
+    const {userName, password} = req.body
+    // Check if username exists in the member table
+    const member = await db.Member.findOne({ where: { userName } });
+    if (!member) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    
+    // Compare hashed password with the provided password
+    const isMatch = await bcrypt.compare(password, member.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+     // Create a JWT token
+     const payload = {
+      member_id: member.id,
+      username: member.username
+    };
+    
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Save login history
+    const loginHistory = {
+      member_id: member.id,
+      ip_address: req.ip,
+      device_info: req.headers['user-agent'],
+      login_at: new Date()
+    };
+    
+    await db.LoginHistory.create(loginHistory);
+    
+    // Return the JWT token
+    res.json(
+      {
+        message: 'login successfully',
+        token: token
+      }
+    )
+  } catch {
+    res.status(500).json({ error: 'Server error'})
+  }
+}
