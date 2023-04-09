@@ -3,4 +3,5 @@ module.exports = app => {
   const memberController = require("../controllers/member.controller");
   app.use("/", router)
   router.post("/signup", memberController.memberSignUp)
+  router.post("/signIn", memberController.memberSignIn)
 }
