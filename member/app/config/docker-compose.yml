@@ -1,16 +1,29 @@
 version: '3.8'
 
 services:
-  db: 
+  member_dev_db: 
     image: mysql:latest
-    container_name: mysql_member
+    container_name: mysql_member_dev
     # restart: always
     ports:
       - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=member
+      - MYSQL_DATABASE=memberDev
       - MYSQL_USER=test
       - MYSQL_PASSWORD=654321
     volumes:
-      - ../../../mysql_member_data:/var/lib/mysql
+      - ../../../mysql_memberDev_data:/var/lib/mysql
+  member_test_db: 
+    image: mysql:latest
+    container_name: mysql_member-test
+    # restart: always
+    ports:
+      - 3307:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=memberTest
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=654321
+    volumes:
+      - ../../../mysql_memberTest_data:/var/lib/mysql
