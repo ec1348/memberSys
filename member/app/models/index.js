@@ -10,9 +10,10 @@ const sequelize = new Sequelize(
       host: dbConfig.HOST,
       dialect: dbConfig.dialect,
       pool: dbConfig.pool,
+      port: dbConfig.port,
       timezone: '+08:00',
       logging: (query) => {
-        fs.appendFileSync('queries.log', query + '\n')
+        fs.appendFileSync('queries_' + process.env.NODE_ENV + '.log', query + '\n')
       }
   },
   )
