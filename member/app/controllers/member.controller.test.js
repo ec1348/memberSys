@@ -11,7 +11,7 @@ describe('Test memberController', function() {
         .post('/signup')
         .send({
           userName: 'testUserName',
-          password: '6666',
+          password: '123456',
           email: 'test@gmail.com',
           firstName: 'testFirstName',
           lastName: 'testLastName'
@@ -26,7 +26,7 @@ describe('Test memberController', function() {
         .post('/signup')
         .send({
           userName: 'testUserName',
-          password: '6666',
+          password: '123456',
           email: 'testa@gmail.com',
           firstName: 'testFirstName',
           lastName: 'testLastName'
@@ -41,7 +41,7 @@ describe('Test memberController', function() {
         .post('/signup')
         .send({
           userName: 'testUserName2',
-          password: '6666',
+          password: '123456',
           email: 'test@gmail.com',
           firstName: 'testFirstName',
           lastName: 'testLastName'
