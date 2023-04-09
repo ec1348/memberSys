@@ -32,20 +32,6 @@ db.LoginHistory.belongsTo(db.Member, { foreignKey: 'member_id' });
     if(process.env.NODE_ENV === 'dev'){
       await sequelize.sync({force: false})
       console.log('Table created')
-      const member = await db.Member.findOne({where: {firstName: 'testFirstName: Eric'}})
-      if(!member) {
-        await db.Member.create({
-          userName: 'testUserName: userName',
-          password: '$2b$12$ziu2WZT.7ZuasduiBv7zT.jwFpV6AnLbH9AXv6Ug37WcZlz21Tyje',
-          email: 'ec1348@gmail.com',
-          firstName: 'testFirstName: Eric',
-          lastName: 'testLastName: Chen',
-          DOB: '1996-06-11 00:00:00'
-        })
-        console.log('First member created')
-      } else {
-        console.log('First member already exists')
-      }
     }
   } catch(err){
     console.error('Unable to create table or check for existing members:', err);
