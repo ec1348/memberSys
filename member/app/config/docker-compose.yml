@@ -16,7 +16,7 @@ services:
       - ../../../mysql_memberDev_data:/var/lib/mysql
   member_test_db: 
     image: mysql:latest
-    container_name: mysql_member-test
+    container_name: mysql_member_test
     # restart: always
     ports:
       - 3307:3306
