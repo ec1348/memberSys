@@ -18,25 +18,20 @@ const sequelize = new Sequelize(
   },
   )
 const db = {}
+db.sequelize = sequelize
 db.Member = require('./member.model')(sequelize);
 db.LoginHistory = require('./login-history.model')(sequelize)
+db.JwtTokens = require('./jwt-tokens.model')(sequelize)
 
-// set foreignKey
+// set foreignKey 
+// one to many (Member <-> LoginHistory)
 db.Member.hasMany(db.LoginHistory, { foreignKey: 'member_id' });
 db.LoginHistory.belongsTo(db.Member, { foreignKey: 'member_id' });
 
-(async () => {
-  try{
-    //資料庫結構與ORM模型同步
-    await sequelize.sync({ force: process.env.NODE_ENV === 'test'})
-    // 判斷資料表有無資料，無則新增
-    if(process.env.NODE_ENV === 'dev'){
-      await sequelize.sync({force: false})
-      console.log('Table created')
-    }
-  } catch(err){
-    console.error('Unable to create table or check for existing members:', err);
-  }
-})()
+// one to many (Member <-> JwtToken)
+db.Member.hasMany(db.JwtTokens, { foreignKey: 'member_id' });
+db.JwtTokens.belongsTo(db.Member, { foreignKey: 'member_id' });
+
+sequelize.sync({ force: false})
 
 module.exports = db

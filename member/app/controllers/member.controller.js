@@ -71,6 +71,20 @@ exports.memberSignIn = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
+
+    // Check if token has revoked = 0
+    const hasValidToken = await db.JwtTokens.findAll( { 
+      where: {
+        revoked: false,
+        member_id: member.id
+      } 
+    })
+    if(hasValidToken.length > 0){
+      await db.JwtTokens.update({ revoked: true }, {
+        where: { member_id : member.id}
+      })
+    }
+
      // Create a JWT token
      const payload = {
       member_id: member.id,
@@ -78,6 +92,8 @@ exports.memberSignIn = async (req, res) => {
     };
     
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const currentDate = new Date();
+    const oneHourLater = new Date(currentDate.setHours(currentDate.getHours() + 1))
     // Save login history
     const loginHistory = {
       member_id: member.id,
@@ -85,8 +101,16 @@ exports.memberSignIn = async (req, res) => {
       device_info: req.headers['user-agent'],
       login_at: new Date()
     };
-    
+
     await db.LoginHistory.create(loginHistory);
+
+    //Save token history
+    const tokenHistory = {
+      member_id: member.id,
+      token: token,
+      expired_at: oneHourLater
+    }
+    await db.JwtTokens.create(tokenHistory)
     
     // Return the JWT token
     res.json(
