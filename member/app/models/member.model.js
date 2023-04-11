@@ -30,6 +30,10 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    permission_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     }, {
       sequelize, 
       modelName: 'Member',

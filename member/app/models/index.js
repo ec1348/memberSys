@@ -22,6 +22,7 @@ db.sequelize = sequelize
 db.Member = require('./member.model')(sequelize);
 db.LoginHistory = require('./login-history.model')(sequelize)
 db.JwtTokens = require('./jwt-tokens.model')(sequelize)
+db.Permission = require('./permission.model')(sequelize)
 
 // set foreignKey 
 // one to many (Member <-> LoginHistory)
@@ -31,6 +32,10 @@ db.LoginHistory.belongsTo(db.Member, { foreignKey: 'member_id' });
 // one to many (Member <-> JwtToken)
 db.Member.hasMany(db.JwtTokens, { foreignKey: 'member_id' });
 db.JwtTokens.belongsTo(db.Member, { foreignKey: 'member_id' });
+
+// one to many (Permission <-> Member)
+db.Permission.hasMany(db.Member, { foreignKey: 'permission_id' });
+db.Member.belongsTo(db.Permission, { foreignKey: 'permission_id' });
 
 sequelize.sync({ force: false})
 
