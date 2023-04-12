@@ -43,7 +43,8 @@ exports.memberSignUp = async (req, res) => {
     password: hashedPassword,
     email: email,
     firstName: firstName,
-    lastName: lastName
+    lastName: lastName,
+    permission_id: 1, //default permission is USER, id = 1
   })
     .then(member => {
       res.send({

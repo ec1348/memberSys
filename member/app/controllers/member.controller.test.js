@@ -1,10 +1,12 @@
 const app = require('../../app')
 const db = require('../models')
+const seed = require('../models/seed')
 const request = require('supertest')(app)
 const expect = require('chai').expect
 
 before( async () => {
   await db.sequelize.sync({force: true})
+  seed(db)
 })
 
 describe('Test memberController', function() {
