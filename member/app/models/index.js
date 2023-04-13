@@ -2,6 +2,7 @@ const dbConfig = require('../config/db.config')
 const fs = require('fs')
 console.log('process.env.NODE_ENV => ' + process.env.NODE_ENV)
 const Sequelize = require('sequelize')
+const seed = require('./seed')
 const sequelize = new Sequelize(
   dbConfig.DB, 
   dbConfig.USER, 
@@ -37,6 +38,8 @@ db.JwtTokens.belongsTo(db.Member, { foreignKey: 'member_id' });
 db.Permission.hasMany(db.Member, { foreignKey: 'permission_id' });
 db.Member.belongsTo(db.Permission, { foreignKey: 'permission_id' });
 
+// init db data
+seed(db)
 sequelize.sync({ force: false})
 
 module.exports = db
