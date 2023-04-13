@@ -23,7 +23,6 @@ describe('Test memberController', function() {
           lastName: 'testLastName'
         })
         .end((err, res) => {
-          console.log('123')
           expect(res.body.message).to.equal('add new member successfully')
           done()
         })
@@ -83,6 +82,51 @@ describe('Test memberController', function() {
           expect(res.status).to.equal(401);
           expect(res.body.error).to.equal('Invalid username or password')
           done(err)
+        })
+    });
+  });
+  describe('GET /members', () => {
+    it('Should return a list of members when authenticated with a valid token', (done) => {
+      let token = ''
+      request
+        .post('/signin')
+        .send({ userName: 'admin', password: '123456'})
+        .end(( err, res) => {
+          token = res.body.token
+          request
+            .get('/members')
+            .set('Authorization', `Bearer ${token}`)
+            .end((err, res) => {
+              expect(res.body.message).to.equal('get all members')
+              done(err)
+            })
+        })
+    });
+    it('should return a 401 Unauthorized response', (done) => {
+      request
+        .get('/members')
+        .set('Authorization', `Bearer asf`)
+        .end((err, res) => {
+          expect(res.status).to.equal(401)
+          expect(res.body.message).to.equal('Unauthorized: Failed to authenticate token')
+          done(err)
+        })
+    });
+    it('should return a 403 Forbidden error when authenticated with a valid token but without appropriate permissions', (done) => {
+      let token = ''
+      request
+        .post('/signin')
+        .send({ userName: 'user', password: '123456'})
+        .end(( err, res) => {
+          token = res.body.token
+          request
+            .get('/members')
+            .set('Authorization', `Bearer ${token}`)
+            .end((err, res) => {
+              expect(res.status).to.equal(403)
+              expect(res.body.message).to.equal('Forbidden: You do not authorized to access this resource.')
+              done(err)
+            })
         })
     });
   });

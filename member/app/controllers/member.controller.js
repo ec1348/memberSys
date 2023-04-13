@@ -124,3 +124,26 @@ exports.memberSignIn = async (req, res) => {
     res.status(500).json({ error: 'Server error'})
   }
 }
+
+exports.getAllMembers = async (req, res) => {
+  // Only role ['admin', 'moderator'] can access this resource
+  try {
+    const { role } = req
+    if(role !== 'admin' && role !== 'moderator') {
+      return res.status(403).json({
+        message: 'Forbidden: You do not authorized to access this resource.'
+      })
+    }
+    const members = await db.Member.findAll({ include: [{ model: db.Permission, attributes: ['name'] }]})
+    if( members ){
+      return res.send(
+        {
+          message: 'get all members',
+          All_members: members
+        }
+      )
+    }
+  } catch {
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
