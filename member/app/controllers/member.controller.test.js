@@ -130,4 +130,32 @@ describe('Test memberController', function() {
         })
     });
   });
+  describe('POST /logout', () => {
+    it('Should return a logout successfully message', (done) => {
+      let token = ''
+      request
+        .post('/signin')
+        .send({ userName: 'admin', password: '123456'})
+        .end(( err, res) => {
+          token = res.body.token
+          request
+            .post('/logout')
+            .set('Authorization', `Bearer ${token}`)
+            .end((err, res) => {
+              expect(res.body.message).to.equal('Logout successfully')
+              done(err)
+            })
+        })
+    });
+    it('should return a 401 Unauthorized response', (done) => {
+      request
+        .post('/logout')
+        .set('Authorization', `Bearer asf`)
+        .end((err, res) => {
+          expect(res.status).to.equal(401)
+          expect(res.body.message).to.equal('Unauthorized: Failed to authenticate token')
+          done(err)
+        })
+    });
+  });
 })

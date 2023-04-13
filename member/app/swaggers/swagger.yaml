@@ -84,7 +84,32 @@ paths:
           description: Unauthorized
         '500':
           description: Internal server error
-                    
+  /logout:
+    post:
+      summary: Member log out
+      description: Use this api to log out.
+      tags: 
+        - members
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Returns log out successfully message 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Logout successfully'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Forbidden
+        '500':
+          description: Internal server error
+
 
 components:
   securitySchemes:

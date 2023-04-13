@@ -6,5 +6,6 @@ module.exports = app => {
   app.use("/", router)
   router.post("/signup", memberController.memberSignUp)
   router.post("/signIn", memberController.memberSignIn)
+  router.post("/logout", jwt_verify, memberController.memberLogout)
   router.get("/members", jwt_verify, permission_check, memberController.getAllMembers)
 }

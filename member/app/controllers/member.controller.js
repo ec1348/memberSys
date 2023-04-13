@@ -125,6 +125,21 @@ exports.memberSignIn = async (req, res) => {
   }
 }
 
+exports.memberLogout = async (req, res) => {
+  try{
+    let { token: authToken } = req
+    // Check if token exists in the JwtTokens table
+    const token = await db.JwtTokens.findOne({ where: { token: authToken }});
+    if(!token) {
+      return res.status(404).json({ message: 'Invalid token' });
+    }
+    await db.JwtTokens.update({ revoked: true }, { where: { token: authToken }})
+    res.json({ message: 'Logout successfully'})
+  } catch {
+    res.status(500).json({ error: 'Server error'})
+  }
+}
+
 exports.getAllMembers = async (req, res) => {
   // Only role ['admin', 'moderator'] can access this resource
   try {
