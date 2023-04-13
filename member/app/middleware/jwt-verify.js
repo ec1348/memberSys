@@ -25,6 +25,7 @@ module.exports = (req, res, next) => {
       });
     }
     req.member_id = decoded.member_id;
+    req.token = token
     next()
   })
 }
