@@ -3,6 +3,8 @@ const db = require('../models')
 const seed = require('../models/seed')
 const request = require('supertest')(app)
 const expect = require('chai').expect
+const bcrypt = require('bcrypt')
+const uuid = require('uuid')
 
 before( async () => {
   await db.sequelize.sync({force: true})
@@ -156,6 +158,77 @@ describe('Test memberController', function() {
           expect(res.body.message).to.equal('Unauthorized: Failed to authenticate token')
           done(err)
         })
+    });
+  });
+  describe('POST /request-reset-password', () => {
+    it('should send a password reset email for valid user credentials', async () => {
+      const res = await request
+        .post('/request-reset-password')
+        .send({ userName: 'user', email: 'ec1111@gmail.com' })
+        .expect(200);
+      expect(res.body.message).to.equal('Password reset email sent');
+      expect(res.body.resetLink).to.be.a('string');
+      const member_id = res.body.resetLink.split('&member_id=')[1]
+      const revokedRequest = await db.PasswordResetRequest.findOne({ where:{member_id, revoked: false} })
+      revokedRequest.destroy();
+    });
+
+    it('should return 401 for invalid user credentials', async () => {
+      const res = await request
+        .post('/request-reset-password')
+        .send({ userName: 'nonexistentuser', email: 'nonexistentuser@example.com' })
+        .expect(401);
+      expect(res.body.message).to.equal('Invalid username or password.');
+    });
+  });
+  describe('PUT /reset-password', () => {
+    let resetToken = uuid.v4(), memberId;
+    beforeEach(async () => {
+      const member = await db.Member.findOne({ where: { userName: 'user' } });
+      const timestamp = Date.now()
+      const key = `${resetToken}:${member.id}:${timestamp}`
+      await db.PasswordResetRequest.create({
+        member_id: member.id,
+        token: await bcrypt.hash(key, 10),
+        timestamp,
+        revoked: false,
+      });
+      memberId = member.id;
+    });
+
+    it('should update password for valid reset token and member ID', async () => {
+      const res = await request
+        .put(`/reset-password?token=${resetToken}&member_id=${memberId}`)
+        .send({ password: 'newPassword123' })
+        .expect(200);
+      expect(res.body.message).to.equal('Update password successfully');
+    });
+
+    it('should return 401 for invalid reset token or member ID(Invalid Token)', async () => {
+      const res = await request
+        .put(`/reset-password?token=invalidToken&member_id=${memberId}`)
+        .send({ password: 'newPassword123' })
+        .expect(401)
+      expect(res.body.message).to.equal('Unauthorized operation');
+    });
+
+    it('should return 401 for invalid reset token or member ID(Invalid memberID)', async () => {
+      const res2 = await request
+        .put(`/reset-password?token=${resetToken}&member_id=999`)
+        .send({ password: 'newPassword123' })
+        .expect(401)
+      expect(res2.body.message).to.equal('Unauthorized operation');
+    });
+
+    it('should return 401 for expired reset token', async () => {
+      const resetRequest = await db.PasswordResetRequest.findOne({ where: { member_id: memberId, revoked: false } });
+      resetRequest.timestamp = Date.now() - 11 * 60 * 1000;
+      await resetRequest.save();
+      const res = await request
+        .put(`/reset-password?token=${resetToken}&member_id=${memberId}`)
+        .send({ password: 'newPassword123' })
+        .expect(401);
+      expect(res.body.message).to.equal('Token expired!');
     });
   });
 })

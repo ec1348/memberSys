@@ -109,8 +109,85 @@ paths:
           description: Forbidden
         '500':
           description: Internal server error
-
-
+  /request-reset-password:
+    post:
+      summary: Generate a password reset token and send it via email
+      description: Use this api to generate password reset token.
+      tags:
+        - "members"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  example: 'user'
+                email:
+                  type: string
+                  format: email
+                  example: 'ec1111@gmail.com'
+              required:
+                - email
+                - userName
+      responses:
+        '200':
+          description: Password reset email sent
+        '400':
+          description: Invalid input or user not found
+        '500':
+          description: Internal server error
+  /reset-password/:
+    put:
+      summary: Reset user password
+      description: Resets a user's password with a valid reset token and member ID
+      parameters:
+        - in: query
+          name: token
+          description: The unique reset token for the user
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: member_id
+          description: The ID of the member whose password needs to be reset
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: The new password for the user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  maxLength: 32
+              required:
+                - password
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authToken:
+                    type: string
+                    description: JWT for user authentication
+        '400':
+          description: Invalid reset token
+        '404':
+          description: Member not found
+        '500':
+          description: Internal server error
 components:
   securitySchemes:
       bearerAuth:

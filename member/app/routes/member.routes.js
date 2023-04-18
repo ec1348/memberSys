@@ -8,4 +8,6 @@ module.exports = app => {
   router.post("/signIn", memberController.memberSignIn)
   router.post("/logout", jwt_verify, memberController.memberLogout)
   router.get("/members", jwt_verify, permission_check, memberController.getAllMembers)
+  router.post("/request-reset-password", memberController.requestResetPassword)
+  router.put("/reset-password", memberController.resetPassword)
 }

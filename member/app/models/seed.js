@@ -26,17 +26,14 @@ const MEMBER_INIT_DATA = [
 ]
 const PERMISSION_INIT_DATA = [
   {
-    id: 1,
     name: 'member',
     description: "This is the default role assigned to individuals who sign up for the web application. They have the basic access to the application's feature.",
   },
   {
-    id: 2,
     name: 'admin',
     description: "System administrators have access to all areas of the application.",
   },
   {
-    id: 3,
     name: 'moderator',
     description: "Moderators have limited administrative privileges and are responsible for monitoring and mangaing user-generated content.",
   },
@@ -48,6 +45,13 @@ module.exports = async (db) => {
     await db.Member.bulkCreate(MEMBER_INIT_DATA);
   }
   if(process.env.NODE_ENV === 'dev'){
+    const p_member = await db.Permission.findOne({ where: { name: 'member'}});
+    if(!p_member) await db.Permission.create( PERMISSION_INIT_DATA[0] )
+    const p_admin = await db.Permission.findOne({ where: { name: 'admin'}});
+    if(!p_admin) await db.Permission.create( PERMISSION_INIT_DATA[1] )
+    const p_moderator = await db.Permission.findOne({ where: { name: 'moderator'}});
+    if(!p_moderator) await db.Permission.create( PERMISSION_INIT_DATA[2] )
+    
     const admin = await db.Member.findOne({ where:{ userName: 'admin' } })
     if(!admin) await db.Member.create( MEMBER_INIT_DATA[0] )
     const user = await db.Member.findOne({ where:{ userName: 'user' } })

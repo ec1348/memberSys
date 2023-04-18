@@ -1,6 +1,7 @@
 const db = require('../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
+const uuid = require('uuid')
 
 let hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10)
@@ -160,5 +161,83 @@ exports.getAllMembers = async (req, res) => {
     }
   } catch {
     return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+exports.requestResetPassword = async (req, res) => {
+  try {
+    const { userName, email } = req.body;
+    let [memberWithUserName, memberWithEmail] = await Promise.all([
+      await db.Member.findOne({ where: { userName } }),
+      await db.Member.findOne({ where: { email } })
+    ])
+    if (!memberWithUserName || !memberWithEmail)
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    const member_id = memberWithUserName.id;
+    const resetToken = uuid.v4();
+    const timestamp = Date.now();
+    const key = `${resetToken}:${member_id}:${timestamp}`;
+    const hashedToken = await bcrypt.hash(key, 10);
+    const PasswordResetRequest_Data = {
+      member_id,
+      token: hashedToken,
+      timestamp,
+      revoked: false
+    }
+    // Check if token has revoked = 0
+    const previousResetRequests = await db.PasswordResetRequest.findAll( { 
+      where: { revoked: false, member_id } 
+    })
+    if(previousResetRequests.length > 0){
+      await db.PasswordResetRequest.update(
+        { revoked: true }, 
+        { where: { member_id } })
+    }
+    await db.PasswordResetRequest.create(PasswordResetRequest_Data)
+    const resetLink = `https://example.com/reset-password?token=${resetToken}&member_id=${member_id}`;
+    res.json({
+      message: 'Password reset email sent', 
+      resetLink 
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Internal server error' });
+  }
+}
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, member_id } = req.query
+    const newPassword = req.body.password
+    const validRestRequest = await db.PasswordResetRequest.findOne(
+      { where: { member_id, revoked: false } }
+    )
+    if(!validRestRequest) 
+      return res.status(401).json({ message: 'Unauthorized operation' });
+
+    const tokenExpiredTime = 10 * 60 * 1000
+    if(validRestRequest.timestamp + tokenExpiredTime < Date.now())
+      return res.status(401).json({ message: 'Token expired!' });
+
+    const key = `${token}:${member_id}:${validRestRequest.timestamp}`
+    const tokenMatch = await bcrypt.compare(key, validRestRequest.token);
+
+    if(!tokenMatch)
+      return res.status(401).json({ message: 'Unauthorized operation'});
+
+    let hashedPassword = await hashPassword(newPassword);
+    
+    await db.sequelize.transaction(async (t) => {
+      await db.Member.update(
+        { password: hashedPassword }, 
+        { where: { id: member_id }, transaction: t }
+        )
+      await db.PasswordResetRequest.update(
+        { revoked: true },
+        { where: { member_id, revoked: false }, transaction: t },
+      )
+    })
+    res.json({ message: 'Update password successfully' })
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }

@@ -24,6 +24,7 @@ db.Member = require('./member.model')(sequelize);
 db.LoginHistory = require('./login-history.model')(sequelize)
 db.JwtTokens = require('./jwt-tokens.model')(sequelize)
 db.Permission = require('./permission.model')(sequelize)
+db.PasswordResetRequest = require('./password-reset-request.model')(sequelize)
 
 // set foreignKey 
 // one to many (Member <-> LoginHistory)
@@ -38,8 +39,18 @@ db.JwtTokens.belongsTo(db.Member, { foreignKey: 'member_id' });
 db.Permission.hasMany(db.Member, { foreignKey: 'permission_id' });
 db.Member.belongsTo(db.Permission, { foreignKey: 'permission_id' });
 
-// init db data
-seed(db)
-sequelize.sync({ force: false})
+// one to many (PasswordResetRequest <-> Member)
+db.PasswordResetRequest.belongsTo(db.Member, { foreignKey: 'member_id' });
+db.Member.hasMany(db.PasswordResetRequest, { foreignKey: 'member_id' });
+
+const isTest = process.env.NODE_ENV === 'test'
+sequelize.sync({ force: isTest })
+  .then(() => seed(db))
+  .then(() => {
+    console.log('Database synced and seeded.');
+  })
+  .catch((error) => {
+    console.error('Error syncing or seeding database:', error);
+  });
 
 module.exports = db
