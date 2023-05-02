@@ -1,21 +1,11 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 
 createSwaggerDocs = () => {
-  var servers = [];
-  if (process.env.NODE_ENV === 'production-aws') {
+  let servers = [];
+  if (process.env.NODE_ENV === 'prod') {
     servers.push({
-      url: 'https://production.abc/',
+      url: `${process.env.PROD_URL}`,
       description: 'production environment'
-    });
-  } else if (process.env.NODE_ENV === 'production') {
-    servers.push({
-      url: 'https://production.abc/api',
-      description: 'production environment'
-    });
-  } else if (process.env.NODE_ENV === 'qa') {
-    servers.push({
-      url: 'https://qa.abc/',
-      description: 'test environment'
     });
   } else {
     servers.push({
