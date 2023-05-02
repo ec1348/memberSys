@@ -59,4 +59,19 @@ module.exports = async (db) => {
     const mod = await db.Member.findOne({where:{ userName: 'moderator' }})
     if(!mod) await db.Member.create(MEMBER_INIT_DATA[2])
   }
+  if(process.env.NODE_ENV === 'prod'){
+    const p_member = await db.Permission.findOne({ where: { name: 'member'}});
+    if(!p_member) await db.Permission.create( PERMISSION_INIT_DATA[0] )
+    const p_admin = await db.Permission.findOne({ where: { name: 'admin'}});
+    if(!p_admin) await db.Permission.create( PERMISSION_INIT_DATA[1] )
+    const p_moderator = await db.Permission.findOne({ where: { name: 'moderator'}});
+    if(!p_moderator) await db.Permission.create( PERMISSION_INIT_DATA[2] )
+    
+    const admin = await db.Member.findOne({ where:{ userName: 'admin' } })
+    if(!admin) await db.Member.create( MEMBER_INIT_DATA[0] )
+    const user = await db.Member.findOne({ where:{ userName: 'user' } })
+    if(!user) await db.Member.create( MEMBER_INIT_DATA[1] )
+    const mod = await db.Member.findOne({where:{ userName: 'moderator' }})
+    if(!mod) await db.Member.create(MEMBER_INIT_DATA[2])
+  }
 }
