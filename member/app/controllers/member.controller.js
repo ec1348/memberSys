@@ -121,8 +121,8 @@ exports.memberSignIn = async (req, res) => {
         token: token
       }
     )
-  } catch {
-    res.status(500).json({ error: 'Server error'})
+  } catch(error) {
+    res.status(500).json({ message: 'Server error', error: error.message})
   }
 }
 
