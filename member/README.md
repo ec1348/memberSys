@@ -1,6 +1,10 @@
 # Member #
 This project will include the fundamental function of member system.
 
+## Project Structure ##
+This is the basic member system structure.
+![Project Structure](./memberPS-1.png)
+
 ## Function List ##
 
 - ### Member Registration ###

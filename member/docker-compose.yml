@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  memberApi:
+    image: ${MEMBER_IMGAGE}
+    container_name: memberApi
+    ports:
+      - 3000:3000
+    depends_on:
+      - member_prod_ec2_db
+    environment:
+      - DB_HOST=member_prod_ec2_db
+      - JWT_SECRET=${JWT_SECRET}
+      - PROD_URL=${PROD_URL}
+      - PROD_EC2_MYSQL_DATABASE=${PROD_EC2_MYSQL_DATABASE}
+      - PROD_EC2_MYSQL_USER=${PROD_EC2_MYSQL_USER}
+      - PROD_EC2_MYSQL_PASSWORD=${PROD_EC2_MYSQL_PASSWORD}
+  member_prod_ec2_db:
+    image: mysql:latest
+    container_name: mysql_member_prod_ec2
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=${PROD_EC2_MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${PROD_EC2_MYSQL_DATABASE}
+      - MYSQL_USER=${PROD_EC2_MYSQL_USER}
+      - MYSQL_PASSWORD=${PROD_EC2_MYSQL_PASSWORD}
+    volumes:
+      - ../mysql_memberProd_data:/var/lib/mysql
+  member_dev_db: 
+    image: mysql:latest
+    container_name: mysql_member_dev
+    # restart: always
+    ports:
+      - 3305:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DEV_MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DEV_MYSQL_DATABASE}
+      - MYSQL_USER=${DEV_MYSQL_USER}
+      - MYSQL_PASSWORD=${DEV_MYSQL_PASSWORD}
+    volumes:
+      - ../mysql_memberDev_data:/var/lib/mysql
+  member_test_db: 
+    image: mysql:latest
+    container_name: mysql_member_test
+    # restart: always
+    ports:
+      - 3307:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=${TEST_MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${TEST_MYSQL_DATABASE}
+      - MYSQL_USER=${TEST_MYSQL_USER}
+      - MYSQL_PASSWORD=${TEST_MYSQL_PASSWORD}
+    volumes:
+      - ../mysql_memberTest_data:/var/lib/mysql

@@ -1,0 +1,5 @@
+node_modules
+queries_dev.log
+queries_test.log
+queries_prod.log
+.env

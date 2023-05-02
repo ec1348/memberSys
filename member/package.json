@@ -4,6 +4,7 @@
   "description": "member 功能",
   "main": "server.js",
   "scripts": {
+    "prod": "NODE_ENV=prod node server.js",
     "dev": "NODE_ENV=dev nodemon",
     "test": "NODE_ENV=test mocha ./app/**/*test.js"
   },
