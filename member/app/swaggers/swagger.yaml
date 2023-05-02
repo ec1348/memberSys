@@ -143,6 +143,8 @@ paths:
     put:
       summary: Reset user password
       description: Resets a user's password with a valid reset token and member ID
+      tags:
+        - "members"
       parameters:
         - in: query
           name: token
