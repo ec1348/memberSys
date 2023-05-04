@@ -1,6 +1,6 @@
 pipeline {
 
-  agent only
+  agent any
 
   stages {
 
