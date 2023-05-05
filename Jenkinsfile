@@ -1,20 +1,18 @@
 pipeline {
-
   agent any
-
   stages {
-
-    stage("build") {
-
+    stage("Build") {
       steps{
-        echo 'building the application'
+        sh './devops/build/1.dockerBuildEc2.sh'
       }
     }
 
-    stage("test") {
-
+    stage("Push") {
       steps{
-        echo 'testing the application'
+        withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+          sh './devops/build/2.dockerPushEc2.sh'
+          echo 'Push the application to docker hub'
+        }
       }
     }
 
