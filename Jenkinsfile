@@ -20,6 +20,7 @@ pipeline {
     stage("deploy") {
 
       steps{
+        sh "echo The value of ApiServer is \${env.ApiServer}"
         echo 'deploying the application'
       }
     }
